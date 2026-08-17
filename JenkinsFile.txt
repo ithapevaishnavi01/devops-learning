@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'jankins-maven'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/ithapevaishnavi01/simple-java-maven-app.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn -B -DskipTests clean package'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+
+            post {
+                always {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'echo "deploying the application"'
+            }
+        }
+    }
+}
