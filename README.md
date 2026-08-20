@@ -1,52 +1,19 @@
-# 🚀 My DevOps Learning Journey
+Farmer Worker Portal 🌾👨‍🌾
 
-I am learning DevOps through hands-on practice and real-world projects.
+A web-based platform designed to connect farmers and workers in a simple and efficient way. This project helps farmers find suitable workers for agricultural tasks while allowing workers to discover job opportunities nearby.
 
-## 📚 DevOps Roadmap
+✨ Features
+Farmer and Worker Registration/Login
+Job Posting and Worker Hiring
+Easy Communication Between Farmers and Workers
+User-Friendly Interface
+Responsive Web Design
+Secure Authentication System
+Dashboard for Managing Work and Requests
 
-![DevOps Roadmap](./roadmap/devops-learning-roadmap.png)
+💻 Technologies Used
+HTML
+CSS
+JavaScript
+MongoDB
 
-## 🛠️ Technologies I'm Learning
-
-- Linux
-- Git & GitHub
-- Docker
-- Docker Compose
-- AWS
-- Jenkins
-- CI/CD
-- Terraform
-- Kubernetes
-- Prometheus
-- Grafana
-
-## 📅 Learning Plan
-
-| Month | Technology |
-|---|---|
-| 1 | Linux + Networking + Git |
-| 2 | Docker |
-| 3 | AWS |
-| 4 | Jenkins + CI/CD |
-| 5 | Kubernetes |
-| 6 | Terraform + Monitoring |
-
-## 🚀 Projects
-
-### Project 1
-Linux server deployment
-
-### Project 2
-Dockerized full-stack application
-
-### Project 3
-AWS deployment using Docker
-
-### Project 4
-Jenkins CI/CD pipeline
-
-### Project 5
-Kubernetes deployment
-
-### Project 6
-Monitoring with Prometheus + Grafana
