@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriConnect — Farmer Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-deep: #1a3d1f;
+      --green-mid: #2d6a30;
+      --green-light: #4a9e50;
+      --green-pale: #e8f5e9;
+      --gold: #c8a84b;
+      --gold-light: #f0d98a;
+      --cream: #fdfaf4;
+      --text-dark: #1a1a1a;
+      --text-mid: #4a4a4a;
+      --text-light: #888;
+      --shadow: 0 20px 60px rgba(26,61,31,0.15);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--green-deep);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    /* Background texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(74,158,80,0.2) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(200,168,75,0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    /* ─── CARD ─── */
+    .card {
+      background: var(--cream);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ─── HEADER BAND ─── */
+    .card-header {
+      background: linear-gradient(135deg, var(--green-deep) 0%, var(--green-mid) 100%);
+      padding: 36px 36px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-header::after {
+      content: '🌾';
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 56px;
+      opacity: 0.25;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255,255,255,0.65);
+      font-size: 13px;
+      text-decoration: none;
+      margin-bottom: 16px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: white; }
+    .card-header h1 {
+      font-family: 'Playfair Display', serif;
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .card-header p {
+      color: rgba(255,255,255,0.65);
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    /* ─── TABS (Login / Register) ─── */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #e8e8e8;
+      background: white;
+    }
+    .tab {
+      flex: 1;
+      padding: 16px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-light);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+    .tab.active {
+      color: var(--green-mid);
+      border-bottom-color: var(--green-mid);
+    }
+
+    /* ─── PANELS ─── */
+    .panel { display: none; padding: 32px 36px; }
+    .panel.active { display: block; }
+
+    /* ─── FORM ELEMENTS ─── */
+    .field { margin-bottom: 18px; }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-mid);
+      margin-bottom: 7px;
+      letter-spacing: 0.3px;
+    }
+    input[type="text"], input[type="password"], input[type="tel"], input[type="number"] {
+      width: 100%;
+      padding: 13px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--text-dark);
+      background: white;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--green-light);
+      box-shadow: 0 0 0 4px rgba(74,158,80,0.12);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--green-mid), var(--green-light));
+      color: white;
+      box-shadow: 0 6px 20px rgba(45,106,48,0.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(45,106,48,0.45);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* ─── TOAST ─── */
+    #toast {
+      display: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 16px;
+      text-align: center;
+    }
+    #toast.success { background: #e8f5e9; color: #2d6a30; border: 1px solid #a5d6a7; }
+    #toast.error   { background: #fce4ec; color: #c62828; border: 1px solid #ef9a9a; }
+
+    /* ─── DASHBOARD (post job) ─── */
+    #dashboard { display: none; }
+    .user-bar {
+      background: var(--green-pale);
+      padding: 16px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #d0e8d2;
+    }
+    .user-bar .name { font-weight: 600; color: var(--green-deep); font-size: 15px; }
+    .user-bar .role-badge {
+      background: var(--green-mid);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .logout-btn {
+      background: none;
+      border: 1px solid #ccc;
+      color: var(--text-mid);
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+    .logout-btn:hover { border-color: #e53935; color: #e53935; }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: var(--green-deep);
+      margin-bottom: 6px;
+    }
+    .section-sub { font-size: 13px; color: var(--text-light); margin-bottom: 24px; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .posted-jobs { margin-top: 28px; }
+    .posted-jobs h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-mid);
+      margin-bottom: 12px;
+    }
+    .job-card {
+      background: white;
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .job-card-title { font-weight: 600; color: var(--text-dark); font-size: 14px; }
+    .job-card-meta { font-size: 13px; color: var(--text-light); margin-top: 2px; }
+    .status-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: #e8f5e9;
+      color: var(--green-mid);
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <!-- AUTH CARD -->
+  <div class="card" id="authCard">
+    <div class="card-header">
+      <a href="index.html" class="back-link">← Back to Home</a>
+      <h1>Farmer Portal</h1>
+      <p>Post jobs and find agricultural workers</p>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('login')">Sign In</div>
+      <div class="tab" onclick="switchTab('register')">Register</div>
+    </div>
+
+    <!-- LOGIN PANEL -->
+    <div class="panel active" id="loginPanel">
+      <div class="field">
+        <label>Phone Number</label>
+        <input type="tel" id="loginPhone" placeholder="Enter your phone number">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="Enter your password">
+      </div>
+      <button class="btn btn-primary" onclick="doLogin()">Sign In to Portal</button>
+      <div id="toast"></div>
+    </div>
+
+    <!-- REGISTER PANEL -->
+    <div class="panel" id="registerPanel">
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" id="regName" placeholder="Your full name">
+      </div>
+      <div class="field">
+        <label>Phone Number</label>
+        <input type="tel" id="regPhone" placeholder="10-digit mobile number">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="regPass" placeholder="Create a password">
+      </div>
+      <div class="field">
+        <label>Village / Location</label>
+        <input type="text" id="regLocation" placeholder="Your village or town">
+      </div>
+      <button class="btn btn-primary" onclick="doRegister()">Create Account</button>
+      <div id="toastReg"></div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD CARD (shown after login) -->
+  <div class="card" id="dashboard">
+    <div class="card-header">
+      <a href="index.html" class="back-link">← Back to Home</a>
+      <h1>Post a Job</h1>
+      <p>Connect with workers in your area</p>
+    </div>
+
+    <div class="user-bar">
+      <div>
+        <div class="name" id="farmerName">Welcome, Farmer</div>
+        <div style="font-size:12px;color:#666;margin-top:2px" id="farmerPhone"></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <span class="role-badge">Farmer</span>
+        <button class="logout-btn" onclick="doLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div style="padding: 28px 36px 8px">
+      <div class="section-title">New Job Posting</div>
+      <div class="section-sub">Fill in the details to attract the right workers</div>
+
+      <div class="two-col">
+        <div class="field">
+          <label>Job Title</label>
+          <input type="text" id="title" placeholder="e.g. Harvesting">
+        </div>
+        <div class="field">
+          <label>Daily Wage (₹)</label>
+          <input type="number" id="wage" placeholder="e.g. 400">
+        </div>
+      </div>
+      <div class="field">
+        <label>Location</label>
+        <input type="text" id="location" placeholder="Village / Field location">
+      </div>
+      <div class="two-col">
+        <div class="field">
+          <label>Contact Name</label>
+          <input type="text" id="name" placeholder="Name for workers">
+        </div>
+        <div class="field">
+          <label>Contact Phone</label>
+          <input type="tel" id="phone" placeholder="Phone number">
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="postJob()">Post This Job</button>
+      <div id="jobMsg" style="margin-top:14px;font-size:14px;text-align:center;font-weight:500;"></div>
+    </div>
+
+    <div class="posted-jobs" style="padding: 0 36px 32px">
+      <h3>Your Recent Postings</h3>
+      <div id="postedList">
+        <div style="color:#aaa;font-size:13px;text-align:center;padding:20px 0;">No jobs posted yet</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Simple in-memory user store (in real app this would be backend auth)
+  const FARMER_USERS_KEY = 'agri_farmers';
+
+  function getFarmers() {
+    return JSON.parse(localStorage.getItem(FARMER_USERS_KEY) || '[]');
+  }
+  function saveFarmers(users) {
+    localStorage.setItem(FARMER_USERS_KEY, JSON.stringify(users));
+  }
+  function getCurrentUser() {
+    return JSON.parse(sessionStorage.getItem('agri_farmer_user') || 'null');
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+    });
+    document.getElementById('loginPanel').classList.toggle('active', tab === 'login');
+    document.getElementById('registerPanel').classList.toggle('active', tab === 'register');
+  }
+
+  function showToast(id, msg, type) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = type;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 3500);
+  }
+
+  function doRegister() {
+    const name = document.getElementById('regName').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const pass = document.getElementById('regPass').value;
+    const loc = document.getElementById('regLocation').value.trim();
+    if (!name || !phone || !pass || !loc) return showToast('toastReg', 'Please fill all fields', 'error');
+    if (phone.length < 10) return showToast('toastReg', 'Enter a valid 10-digit phone number', 'error');
+
+    const farmers = getFarmers();
+    if (farmers.find(f => f.phone === phone)) return showToast('toastReg', 'This phone is already registered', 'error');
+
+    farmers.push({ name, phone, pass, location: loc });
+    saveFarmers(farmers);
+    showToast('toastReg', '✓ Account created! Please sign in.', 'success');
+    setTimeout(() => switchTab('login'), 1500);
+  }
+
+  function doLogin() {
+    const phone = document.getElementById('loginPhone').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    if (!phone || !pass) return showToast('toast', 'Enter phone and password', 'error');
+
+    const farmers = getFarmers();
+    const user = farmers.find(f => f.phone === phone && f.pass === pass);
+    if (!user) return showToast('toast', 'Invalid phone or password', 'error');
+
+    sessionStorage.setItem('agri_farmer_user', JSON.stringify(user));
+    showDashboard(user);
+  }
+
+  function doLogout() {
+    sessionStorage.removeItem('agri_farmer_user');
+    document.getElementById('authCard').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+  }
+
+  function showDashboard(user) {
+    document.getElementById('authCard').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('farmerName').textContent = 'Welcome, ' + user.name;
+    document.getElementById('farmerPhone').textContent = '📞 ' + user.phone;
+    document.getElementById('name').value = user.name;
+    document.getElementById('phone').value = user.phone;
+    document.getElementById('location').value = user.location || '';
+    loadPostedJobs(user.phone);
+  }
+
+  async function loadPostedJobs(phone) {
+    try {
+      const res = await fetch('http://localhost:5000/jobs');
+      const jobs = await res.json();
+      const mine = jobs.filter(j => j.phone === phone);
+      const list = document.getElementById('postedList');
+      if (mine.length === 0) {
+        list.innerHTML = '<div style="color:#aaa;font-size:13px;text-align:center;padding:20px 0;">No jobs posted yet</div>';
+        return;
+      }
+      list.innerHTML = mine.map(j => `
+        <div class="job-card">
+          <div>
+            <div class="job-card-title">${j.title}</div>
+            <div class="job-card-meta">₹${j.wage}/day · ${j.location}</div>
+          </div>
+          <span class="status-badge">${j.status || 'Open'}</span>
+        </div>
+      `).join('');
+    } catch(e) {}
+  }
+
+  async function postJob() {
+    const user = getCurrentUser();
+    if (!user) return;
+    const title = document.getElementById('title').value.trim();
+    const wage = document.getElementById('wage').value.trim();
+    const location = document.getElementById('location').value.trim();
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const msg = document.getElementById('jobMsg');
+
+    if (!title || !wage || !location) {
+      msg.style.color = '#c62828';
+      msg.textContent = '⚠ Please fill Job Title, Wage, and Location';
+      return;
+    }
+
+    try {
+      const res = await fetch('http://localhost:5000/jobs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, title, wage, location, status: 'Open' })
+      });
+      const data = await res.json();
+      msg.style.color = '#2d6a30';
+      msg.textContent = '✓ ' + data.message;
+      document.getElementById('title').value = '';
+      document.getElementById('wage').value = '';
+      loadPostedJobs(phone);
+    } catch(e) {
+      msg.style.color = '#c62828';
+      msg.textContent = '⚠ Could not connect to server';
+    }
+  }
+
+  // Auto-login if session exists
+  window.onload = () => {
+    const user = getCurrentUser();
+    if (user) showDashboard(user);
+  };
+</script>
+</body>
+</html>
